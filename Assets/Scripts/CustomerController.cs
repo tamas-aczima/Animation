@@ -7,7 +7,9 @@ public class CustomerController : MonoBehaviour {
     private Transform _targetPosition;
     private Vector3 _moveDirection = Vector3.zero;
     private Animator _animator;
-    [SerializeField] private float _speed = 2f;
+    private Rigidbody _rigidbody;
+    [SerializeField] private float _moveSpeed = 2f;
+    [SerializeField] private float _rotateSpeed = 100f;
     private int _queuePosition;
     private bool _isNextCustomer = false;
     private bool _startConversation = false;
@@ -16,32 +18,36 @@ public class CustomerController : MonoBehaviour {
     void Start () {
         _moveDirection = _targetPosition.position - transform.position;
         _animator = GetComponent<Animator>();
+        _rigidbody = GetComponent<Rigidbody>();
     }
 	
 	// Update is called once per frame
-	void Update () {
-        //rotate
-        //float desiredAngle = _targetPosition.eulerAngles.y;
-        //Quaternion rotation = Quaternion.Euler(0, desiredAngle, 0);
-        //transform.Rotate(rotation * _speed * Time.deltaTime);
-
-        //move
-        _moveDirection.Normalize();
-
-        if (Vector3.Distance(_targetPosition.position, transform.position) > 1)
-        {
-            transform.Translate(_moveDirection * _speed * Time.deltaTime);
-        }
-        else
-        {
-            _animator.SetBool("HasReachedDestination", true);
-        }
+	void Update () {   
 
         //manage queue
         if (_queuePosition == 0)
         {
             _isNextCustomer = true;
         }
+    }
+
+    void FixedUpdate()
+    {
+        _moveDirection.y = 0;
+        _moveDirection.Normalize();
+
+        //move
+        if (Vector3.Distance(_targetPosition.position, transform.position) > 0.1)
+        {
+            Quaternion rotation = Quaternion.LookRotation(_moveDirection);
+            _rigidbody.MoveRotation(rotation);
+            _rigidbody.MovePosition(transform.position + (transform.forward * _moveSpeed * Time.deltaTime));
+        }
+        else
+        {
+            _animator.SetBool("HasReachedDestination", true);
+            _rigidbody.MoveRotation(Quaternion.RotateTowards(_rigidbody.rotation, Quaternion.LookRotation(_targetPosition.forward), _rotateSpeed * Time.deltaTime));
+        }        
     }
 
     public Transform TargetPosition
