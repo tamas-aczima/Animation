@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 239234b380b590e4f8c9fcde8fc0dc6f
+timeCreated: 1506724817
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Dialoegue
+  fontNames:
+  - Dialoegue
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
