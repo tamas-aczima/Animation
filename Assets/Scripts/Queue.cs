@@ -7,7 +7,8 @@ public class Queue : MonoBehaviour {
     [SerializeField] private int _maxQueueSize;
     [SerializeField] Transform _queueStartPosition;
     private Transform[] _queuePositions;
-    private int _nextAvailableIndex;
+    private int _front = 0;
+    private int _rear = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -19,7 +20,6 @@ public class Queue : MonoBehaviour {
             _queuePositions[i] = nextQueueObject.transform;
             _queuePositions[i].position = _queuePositions[i - 1].transform.position - new Vector3(0, 0, 3);
         }
-        _nextAvailableIndex = 0;
 	}
 	
 	// Update is called once per frame
@@ -27,14 +27,20 @@ public class Queue : MonoBehaviour {
         
     }
 
-    public Transform[] Queuepositions
+    public Transform[] QueuePositions
     {
         get { return _queuePositions; }
     }
 
-    public int NextAvailableIndex
+    public int Front
     {
-        get { return _nextAvailableIndex; }
-        set { _nextAvailableIndex = value; }
+        get { return _front; }
+        set { _front = value; }
+    }
+
+    public int Rear
+    {
+        get { return _rear; }
+        set { _rear = value; }
     }
 }

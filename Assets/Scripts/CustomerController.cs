@@ -12,13 +12,16 @@ public class CustomerController : MonoBehaviour {
     [SerializeField] private float _rotateSpeed = 100f;
     private int _queuePosition;
     private bool _isNextCustomer = false;
-    private bool _startConversation = false;
+    private bool _isConversationStarted = false;
+    private bool _isCustomerServerd = false;
+    private GameObject _waitingArea;
 
     // Use this for initialization
     void Start () {
-        _moveDirection = _targetPosition.position - transform.position;
+        NewTarget();
         _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody>();
+        _waitingArea = GameObject.Find("WaitingArea");
     }
 	
 	// Update is called once per frame
@@ -29,6 +32,7 @@ public class CustomerController : MonoBehaviour {
         {
             _isNextCustomer = true;
         }
+
     }
 
     void FixedUpdate()
@@ -50,6 +54,19 @@ public class CustomerController : MonoBehaviour {
         }        
     }
 
+    public void NewTarget()
+    {
+        _moveDirection = _targetPosition.position - transform.position;
+    }
+
+    public void WaitForOrder()
+    {
+        Vector3 randomPoint = Random.insideUnitSphere * 2;
+        randomPoint.y = 0;
+        _targetPosition = _waitingArea.transform;
+        NewTarget();
+    }
+
     public Transform TargetPosition
     {
         get { return _targetPosition; }
@@ -68,9 +85,15 @@ public class CustomerController : MonoBehaviour {
         set { _isNextCustomer = value; }
     }
 
-    public bool StartConversation
+    public bool IsConversationStarted
     {
-        get { return _startConversation; }
-        set { _startConversation = value; }
+        get { return _isConversationStarted; }
+        set { _isConversationStarted = value; }
+    }
+
+    public bool IsCustomerServed
+    {
+        get { return _isCustomerServerd; }
+        set { _isCustomerServerd = value; }
     }
 }
