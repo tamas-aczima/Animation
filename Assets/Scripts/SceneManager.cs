@@ -1,12 +1,10 @@
-﻿using System.Collections;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class SceneManager : MonoBehaviour {
 
-    [SerializeField] private GameObject[] _charecters;
+    [SerializeField] private GameObject[] _characters;
     [SerializeField] private Transform[] _spawnPoints;
     [SerializeField] private GameObject _waitingArea;
     [SerializeField] private Queue _queue;
@@ -43,7 +41,7 @@ public class SceneManager : MonoBehaviour {
 
     void SpawnCustomer()
     {
-        GameObject customer = Instantiate(_charecters[Random.Range(0, _spawnPoints.Length)], _spawnPoints[Random.Range(0, _spawnPoints.Length)]);
+        GameObject customer = Instantiate(_characters[Random.Range(0, _spawnPoints.Length)], _spawnPoints[Random.Range(0, _spawnPoints.Length)]);
         _customers.Add(customer);
         customer.GetComponent<CustomerController>().TargetPosition = _queue.QueuePositions[_queue.Rear];
         customer.GetComponent<CustomerController>().QueuePosition = _queue.Rear;

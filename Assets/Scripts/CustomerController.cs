@@ -43,6 +43,7 @@ public class CustomerController : MonoBehaviour {
         //move
         if (Vector3.Distance(_targetPosition.position, transform.position) > 0.1)
         {
+            _animator.SetBool("HasReachedDestination", false);
             Quaternion rotation = Quaternion.LookRotation(_moveDirection);
             _rigidbody.MoveRotation(rotation);
             _rigidbody.MovePosition(transform.position + (transform.forward * _moveSpeed * Time.deltaTime));
@@ -61,9 +62,11 @@ public class CustomerController : MonoBehaviour {
 
     public void WaitForOrder()
     {
-        Vector3 randomPoint = Random.insideUnitSphere * 2;
+        Vector3 randomPoint = Random.insideUnitSphere * 4;
         randomPoint.y = 0;
-        _targetPosition = _waitingArea.transform;
+        GameObject randomPointObject = new GameObject();
+        randomPointObject.transform.position = _waitingArea.transform.position + randomPoint;
+        _targetPosition = randomPointObject.transform;
         NewTarget();
     }
 
@@ -71,6 +74,11 @@ public class CustomerController : MonoBehaviour {
     {
         get { return _targetPosition; }
         set { _targetPosition = value; }
+    }
+
+    public Animator Animator
+    {
+        get { return _animator; }
     }
 
     public int QueuePosition

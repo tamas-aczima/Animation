@@ -103,6 +103,8 @@ public class PlayerController : MonoBehaviour {
                     {
                         _conversationBox.gameObject.SetActive(true);
                         _customer.IsConversationStarted = true;
+                        _customer.Animator.SetInteger("TalkNum", UnityEngine.Random.Range(1, 4));
+                        _customer.Animator.SetBool("IsBeingServed", true);
                     }  
                 }
 
@@ -130,6 +132,18 @@ public class PlayerController : MonoBehaviour {
         if (!_question3Asked)
         {
             _question3Button.gameObject.SetActive(true);
+        }
+
+        //finish order
+        if (_question1Asked && _question2Asked && _question3Asked)
+        {
+            _customer.IsCustomerServed = true;
+            _customer.Animator.SetBool("IsBeingServed", false);
+            _controller.enabled = true;
+            _customer.WaitForOrder();
+            _customer = null;
+            GameObject.Find("SceneManager").GetComponent<SceneManager>().ManageQueue();
+            ResetConversation();
         }
     }
 
@@ -166,12 +180,8 @@ public class PlayerController : MonoBehaviour {
         if (_question1Asked && _question2Asked)
         {
             _question3Asked = true;
+            _conversationBox.gameObject.SetActive(true);
             _conversationText.text = "Okay";
-            _customer.IsCustomerServed = true;
-            _controller.enabled = true;
-            _customer.WaitForOrder();
-            GameObject.Find("SceneManager").GetComponent<SceneManager>().ManageQueue();
-            ResetConversation();
         }
         else
         {
