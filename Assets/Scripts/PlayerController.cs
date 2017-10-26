@@ -6,24 +6,32 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour {
 
-    [SerializeField] private Image _conversationBox;
-    [SerializeField] private Text _conversationText;
-    [SerializeField] private Button _question1Button;
-    [SerializeField] private Button _question2Button;
-    [SerializeField] private Button _question3Button;
-    [SerializeField] private Button _nextButton;
-    [SerializeField] private float _walkSpeed;
-    [SerializeField] private float _rotateSpeed;
-    private CharacterController _controller;
-    private Vector3 _moveDirection = Vector3.zero;
-    private bool _isBehindCounter = false;
-    private bool _question1Asked = false;
-    private bool _question2Asked = false;
-    private bool _question3Asked = false;
-    private int _burgerCount = 0;
-    private CustomerController _customer = null;
+    [SerializeField] private Image conversationBox;
+    [SerializeField] private Text conversationText;
+    [SerializeField] private Button question1Button;
+    [SerializeField] private Button question2Button;
+    [SerializeField] private Button question3Button;
+    [SerializeField] private Button nextButton;
+    [SerializeField] private float walkSpeed;
+    [SerializeField] private float rotateSpeed;
+    private CharacterController controller;
+    private Vector3 moveDirection = Vector3.zero;
+    private bool isBehindCounter = false;
+    private bool question1Asked = false;
+    private bool question2Asked = false;
+    private bool question3Asked = false;
+    private int burgerCount = 0;
+    private CustomerController customer = null;
+    private bool noBurger = true;
 
-    private List<string> _question1PositiveAnswers = new List<string>
+    private List<string> conversationStarters = new List<string>
+    {
+        "Hi, can I order please?",
+        "Can you take my order please?",
+        "Hi, I would like to order."
+    };
+
+    private List<string> question1PositiveAnswers = new List<string>
     {
         "Of course, thanks.",
         "Yes please.",
@@ -32,50 +40,66 @@ public class PlayerController : MonoBehaviour {
         "Yeah, I'm starving."
     };
 
-    private List<string> _question1NegativeAnswers = new List<string>
+    private List<string> question1NegativeAnswers = new List<string>
     {
         "No thanks.",
         "I'll check the menu first.",
         "No thanks, I've already had lunch.",
         "Maybe later.",
-        "I'm good for now, thanks"
+        "I'm good for now, thanks."
+    };
+
+    private List<string> question2PositiveAnswers = new List<string>
+    {
+        "Sure, thanks.",
+        "Yes please.",
+        "A coke would be perfect.",
+        "I would like a glass of coke.",
+        "Of course."
+    };
+
+    private List<string> question2NegativeAnswers = new List<string>
+    {
+        "No thanks, maybe later.",
+        "I'm not that thirsty.",
+        "No thank you."
     };
 
     // Use this for initialization
     void Start () {
         //lock mouse to game
         Cursor.lockState = CursorLockMode.Locked;
-        _controller = GetComponent<CharacterController>();
+        controller = GetComponent<CharacterController>();
 
         //hide UI
-        _conversationBox.gameObject.SetActive(false);
+        conversationBox.gameObject.SetActive(false);
         HideQuestions();
 
         //add listener to buttons
-        _question1Button.onClick.AddListener(() => Question1());
-        _question2Button.onClick.AddListener(() => Question2());
-        _question3Button.onClick.AddListener(() => Question3());
-        _nextButton.onClick.AddListener(() => NextQuestion());
+        question1Button.onClick.AddListener(() => Question1());
+        question2Button.onClick.AddListener(() => Question2());
+        question3Button.onClick.AddListener(() => Question3());
+        nextButton.onClick.AddListener(() => NextQuestion());
     }
 	
 	// Update is called once per frame
 	void Update () {
 
-        if (_controller.enabled)
+        if (controller.enabled)
         {
             //move
-            _moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
-            _moveDirection = transform.TransformDirection(_moveDirection);
-            _controller.Move(_moveDirection * _walkSpeed * Time.deltaTime);
+            moveDirection = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"));
+            moveDirection = transform.TransformDirection(moveDirection);
+            controller.Move(moveDirection * walkSpeed * Time.deltaTime);
 
             //rotate
             if (Input.GetAxis("Mouse X") < 0)
             {
-                transform.Rotate(Vector3.up * -_rotateSpeed);
+                transform.Rotate(Vector3.up * -rotateSpeed);
             }
             if (Input.GetAxis("Mouse X") > 0)
             {
-                transform.Rotate(Vector3.up * _rotateSpeed);
+                transform.Rotate(Vector3.up * rotateSpeed);
             }
         }
 
@@ -87,11 +111,11 @@ public class PlayerController : MonoBehaviour {
             if (Physics.Raycast(transform.position, transform.forward, out hit, 10))
             {
                 //only interact with first customer and only from behind counter
-                _customer = hit.collider.gameObject.GetComponent<CustomerController>();
-                if (_isBehindCounter && _customer != null && _customer.IsNextCustomer)
+                customer = hit.collider.gameObject.GetComponent<CustomerController>();
+                if (isBehindCounter && customer != null && customer.IsNextCustomer)
                 {
                     //disable movement
-                    _controller.enabled = false;
+                    controller.enabled = false;
                     
                     //unlock mouse and make cursor visible
                     Cursor.lockState = CursorLockMode.None;
@@ -99,12 +123,12 @@ public class PlayerController : MonoBehaviour {
                     Cursor.visible = true;
 
                     //show conversation box
-                    if (!_customer.IsConversationStarted)
+                    if (!customer.IsConversationStarted)
                     {
-                        _conversationBox.gameObject.SetActive(true);
-                        _customer.IsConversationStarted = true;
-                        _customer.Animator.SetInteger("TalkNum", UnityEngine.Random.Range(1, 4));
-                        _customer.Animator.SetBool("IsBeingServed", true);
+                        conversationBox.gameObject.SetActive(true);
+                        customer.IsConversationStarted = true;
+                        customer.Animator.SetInteger("TalkNum", UnityEngine.Random.Range(1, 4));
+                        customer.Animator.SetBool("IsBeingServed", true);
                     }  
                 }
 
@@ -115,33 +139,33 @@ public class PlayerController : MonoBehaviour {
     private void NextQuestion()
     {
         //hide conversation box
-        _conversationBox.gameObject.SetActive(false);
+        conversationBox.gameObject.SetActive(false);
 
         //clear text
-        _conversationText.text = "";
+        conversationText.text = "";
 
         //show questions if they haven't been asked
-        if (!_question1Asked)
+        if (!question1Asked)
         {
-            _question1Button.gameObject.SetActive(true);
+            question1Button.gameObject.SetActive(true);
         }
-        if (!_question2Asked)
+        if (!question2Asked)
         {
-            _question2Button.gameObject.SetActive(true);
+            question2Button.gameObject.SetActive(true);
         }
-        if (!_question3Asked)
+        if (!question3Asked)
         {
-            _question3Button.gameObject.SetActive(true);
+            question3Button.gameObject.SetActive(true);
         }
 
         //finish order
-        if (_question1Asked && _question2Asked && _question3Asked)
+        if (question1Asked && question2Asked && question3Asked)
         {
-            _customer.IsCustomerServed = true;
-            _customer.Animator.SetBool("IsBeingServed", false);
-            _controller.enabled = true;
-            _customer.WaitForOrder();
-            _customer = null;
+            customer.IsCustomerServed = true;
+            customer.Animator.SetBool("IsBeingServed", false);
+            controller.enabled = true;
+            customer.WaitForOrder();
+            customer = null;
             GameObject.Find("SceneManager").GetComponent<SceneManager>().ManageQueue();
             ResetConversation();
         }
@@ -151,69 +175,80 @@ public class PlayerController : MonoBehaviour {
     private void Question1()
     {
         HideQuestions();
-        _conversationBox.gameObject.SetActive(true);
-        _question1Asked = true;
+        conversationBox.gameObject.SetActive(true);
+        question1Asked = true;
 
         int i = UnityEngine.Random.Range(0, 2);
         if (i == 0)
         {
-            _conversationText.text = _question1NegativeAnswers.ElementAt(UnityEngine.Random.Range(0, _question1NegativeAnswers.Count));
+            conversationText.text = question1NegativeAnswers.ElementAt(UnityEngine.Random.Range(0, question1NegativeAnswers.Count));
         }
         else
         {
-            _conversationText.text = _question1PositiveAnswers.ElementAt(UnityEngine.Random.Range(0, _question1NegativeAnswers.Count));
-            _burgerCount++;
+            conversationText.text = question1PositiveAnswers.ElementAt(UnityEngine.Random.Range(0, question1PositiveAnswers.Count));
+            burgerCount++;
+            noBurger = false;
         }
     }
 
     private void Question2()
     {
         HideQuestions();
-        _conversationBox.gameObject.SetActive(true);
-        _question2Asked = true;
-        _conversationText.text = "No";
+        conversationBox.gameObject.SetActive(true);
+        question2Asked = true;
+        int i = UnityEngine.Random.Range(0, 2);
+        if (i == 0 && !noBurger)
+        {
+            conversationText.text = question2NegativeAnswers.ElementAt(UnityEngine.Random.Range(0, question2NegativeAnswers.Count));
+        }
+        else
+        {
+            conversationText.text = question2PositiveAnswers.ElementAt(UnityEngine.Random.Range(0, question2PositiveAnswers.Count));
+            burgerCount++;
+        }
     }
 
     private void Question3()
     {
         HideQuestions();
-        if (_question1Asked && _question2Asked)
+        if (question1Asked && question2Asked)
         {
-            _question3Asked = true;
-            _conversationBox.gameObject.SetActive(true);
-            _conversationText.text = "Okay";
+            question3Asked = true;
+            conversationBox.gameObject.SetActive(true);
+            conversationText.text = "Okay.";
         }
         else
         {
-            _conversationBox.gameObject.SetActive(true);
-            _conversationText.text = "I haven't ordered yet";
+            conversationBox.gameObject.SetActive(true);
+            conversationText.text = "I haven't ordered yet.";
         }        
     }
 
     private void HideQuestions()
     {
-        _question1Button.gameObject.SetActive(false);
-        _question2Button.gameObject.SetActive(false);
-        _question3Button.gameObject.SetActive(false);
+        question1Button.gameObject.SetActive(false);
+        question2Button.gameObject.SetActive(false);
+        question3Button.gameObject.SetActive(false);
     }
 
     private void ResetConversation()
     {
-        _conversationText.text = "Can I order?";
-        _question1Asked = false;
-        _question2Asked = false;
-        _question3Asked = false;
+        conversationText.text = conversationStarters.ElementAt(UnityEngine.Random.Range(0, conversationStarters.Count));
+        question1Asked = false;
+        question2Asked = false;
+        question3Asked = false;
+        noBurger = true;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.name == "CounterCollider")
         {
-            _isBehindCounter = true;
+            isBehindCounter = true;
         }
     }
     private void OnTriggerExit(Collider other)
     {
-        _isBehindCounter = false;
+        isBehindCounter = false;
     }
 }

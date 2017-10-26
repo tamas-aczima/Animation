@@ -1,24 +1,22 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Queue : MonoBehaviour {
 
-    [SerializeField] private int _maxQueueSize;
-    [SerializeField] Transform _queueStartPosition;
-    private Transform[] _queuePositions;
-    private int _front = 0;
-    private int _rear = 0;
+    [SerializeField] private int maxQueueSize;
+    [SerializeField] Transform queueStartPosition;
+    private Transform[] queuePositions;
+    private int front = 0;
+    private int rear = 0;
 
 	// Use this for initialization
 	void Start () {
-        _queuePositions = new Transform[_maxQueueSize];
-        _queuePositions[0] = _queueStartPosition;
-        for (int i = 1; i < _queuePositions.Length; i++)
+        queuePositions = new Transform[maxQueueSize];
+        queuePositions[0] = queueStartPosition;
+        for (int i = 1; i < queuePositions.Length; i++)
         {
             GameObject nextQueueObject = new GameObject("QueuePosition" + i);
-            _queuePositions[i] = nextQueueObject.transform;
-            _queuePositions[i].position = _queuePositions[i - 1].transform.position - new Vector3(0, 0, 3);
+            queuePositions[i] = nextQueueObject.transform;
+            queuePositions[i].position = queuePositions[i - 1].transform.position - new Vector3(0, 0, 3);
         }
 	}
 	
@@ -29,18 +27,18 @@ public class Queue : MonoBehaviour {
 
     public Transform[] QueuePositions
     {
-        get { return _queuePositions; }
+        get { return queuePositions; }
     }
 
     public int Front
     {
-        get { return _front; }
-        set { _front = value; }
+        get { return front; }
+        set { front = value; }
     }
 
     public int Rear
     {
-        get { return _rear; }
-        set { _rear = value; }
+        get { return rear; }
+        set { rear = value; }
     }
 }
