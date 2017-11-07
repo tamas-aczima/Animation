@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private Button question2Button;
     [SerializeField] private Button question3Button;
     [SerializeField] private Button nextButton;
+    [SerializeField] private Text customerNameText;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float rotateSpeed;
     private CharacterController controller;
@@ -127,6 +128,7 @@ public class PlayerController : MonoBehaviour {
                     {
                         conversationBox.gameObject.SetActive(true);
                         customer.IsConversationStarted = true;
+                        customerNameText.text = hit.collider.gameObject.name;
                         customer.Animator.SetInteger("TalkNum", UnityEngine.Random.Range(1, 4));
                         customer.Animator.SetBool("IsBeingServed", true);
                     }  

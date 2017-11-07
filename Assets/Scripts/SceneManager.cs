@@ -42,6 +42,7 @@ public class SceneManager : MonoBehaviour {
     void SpawnCustomer()
     {
         GameObject customer = Instantiate(characters[Random.Range(0, characters.Length)], spawnPoints[Random.Range(0, spawnPoints.Length)]);
+        customer.name = customer.name.Replace("(Clone)", "");
         customers.Add(customer);
         customer.GetComponent<CustomerController>().TargetPosition = queue.QueuePositions[queue.Rear];
         customer.GetComponent<CustomerController>().QueuePosition = queue.Rear;

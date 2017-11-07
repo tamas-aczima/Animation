@@ -135,8 +135,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 001d6c0e862d3c14aa6f1e07386017c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _walkSpeed: 5
-  _rotateSpeed: 2
+  conversationBox: {fileID: 0}
+  conversationText: {fileID: 0}
+  question1Button: {fileID: 0}
+  question2Button: {fileID: 0}
+  question3Button: {fileID: 0}
+  nextButton: {fileID: 0}
+  customerNameText: {fileID: 0}
+  walkSpeed: 3
+  rotateSpeed: 4
 --- !u!124 &124170180030365614
 Behaviour:
   m_ObjectHideFlags: 1

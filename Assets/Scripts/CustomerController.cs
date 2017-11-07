@@ -34,7 +34,6 @@ public class CustomerController : MonoBehaviour {
         {
             isNextCustomer = true;
         }
-        Debug.Log(angryWaitingTimer);
     }
 
     void FixedUpdate()
@@ -54,7 +53,7 @@ public class CustomerController : MonoBehaviour {
         {
             animator.SetBool("HasReachedDestination", true);
             _rigidbody.MoveRotation(Quaternion.RotateTowards(_rigidbody.rotation, Quaternion.LookRotation(targetPosition.forward), rotateSpeed * Time.deltaTime));
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle"))
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && !isCustomerServerd)
             {
                 angryWaitingTimer += Time.deltaTime;
             }
