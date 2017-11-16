@@ -15,6 +15,10 @@ public class SceneManager : MonoBehaviour {
     [SerializeField] private static int maxCustomers = 8;
     private int numberOfCustomers = 0;
     private int servedCustomers = 0;
+    private int customersInQueue = 0;
+
+    //for ipad
+    private float timer;
 
     private List<GameObject> customers = new List<GameObject>();
 
@@ -37,6 +41,9 @@ public class SceneManager : MonoBehaviour {
                 spawnTime = GetSpawnTime();
             }
         }
+
+        //increase timer
+        timer += Time.deltaTime;
     }
 
     void SpawnCustomer()
@@ -48,11 +55,13 @@ public class SceneManager : MonoBehaviour {
         customer.GetComponent<CustomerController>().QueuePosition = queue.Rear;
         queue.Rear++;
         numberOfCustomers++;
+        customersInQueue++;
     }
 
     public void ManageQueue()
     {
         servedCustomers++;
+        customersInQueue--;
 
         queue.Rear--;
         queue.Front = 0;
@@ -71,5 +80,20 @@ public class SceneManager : MonoBehaviour {
     float GetSpawnTime()
     {
         return Random.Range(minSpawnTime, maxSpawnTime);
+    }
+
+    public float Timer
+    {
+        get { return timer; }
+    }
+
+    public int ServedCustomers
+    {
+        get { return servedCustomers; }
+    }
+
+    public int CustomersInQueue
+    {
+        get { return customersInQueue; }
     }
 }

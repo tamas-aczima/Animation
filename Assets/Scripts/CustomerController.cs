@@ -15,7 +15,7 @@ public class CustomerController : MonoBehaviour {
     private bool isConversationStarted = false;
     private bool isCustomerServerd = false;
     private GameObject waitingArea;
-    private float angryWaitingTime = 10f;
+    private float angryWaitingTime = 0f;
     private float angryWaitingTimer = 0f;
 
     // Use this for initialization
@@ -24,6 +24,7 @@ public class CustomerController : MonoBehaviour {
         animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody>();
         waitingArea = GameObject.Find("WaitingArea");
+        GetAngryWaitingTime();
     }
 	
 	// Update is called once per frame
@@ -79,6 +80,11 @@ public class CustomerController : MonoBehaviour {
         randomPointObject.transform.position = waitingArea.transform.position + randomPoint;
         targetPosition = randomPointObject.transform;
         NewTarget();
+    }
+
+    public void GetAngryWaitingTime()
+    {
+        angryWaitingTime = Random.Range(10f, 20f);
     }
 
     public Transform TargetPosition
