@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlayerController : MonoBehaviour {
 
+    [SerializeField] private SceneManager sceneManager;
     [SerializeField] private Image conversationBox;
     [SerializeField] private Text conversationText;
     [SerializeField] private Button question1Button;
@@ -168,7 +169,7 @@ public class PlayerController : MonoBehaviour {
             controller.enabled = true;
             customer.WaitForOrder();
             customer = null;
-            GameObject.Find("SceneManager").GetComponent<SceneManager>().ManageQueue();
+            sceneManager.ManageQueue();
             ResetConversation();
         }
     }

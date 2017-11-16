@@ -16,16 +16,20 @@ public class SceneManager : MonoBehaviour {
     private int numberOfCustomers = 0;
     private int servedCustomers = 0;
     private int customersInQueue = 0;
+    private int nextAvailableChair = 0;
 
     //for ipad
     private float timer;
 
     private List<GameObject> customers = new List<GameObject>();
 
+    private List<Chair> chairs = new List<Chair>();
+
 	// Use this for initialization
 	void Start () {
         queue = GetComponent<Queue>();
-        spawnTime = GetSpawnTime();
+        chairs = FindObjectsOfType<Chair>().ToList();
+        spawnTime = GetSpawnTime();        
     }
 	
 	// Update is called once per frame
@@ -95,5 +99,16 @@ public class SceneManager : MonoBehaviour {
     public int CustomersInQueue
     {
         get { return customersInQueue; }
+    }
+
+    public List<Chair> Chairs
+    {
+        get { return chairs; }
+    }
+
+    public int NextAvailableChair
+    {
+        get { return nextAvailableChair; }
+        set { nextAvailableChair = value; }
     }
 }

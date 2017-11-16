@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class CustomerController : MonoBehaviour {
     
+    private SceneManager sceneManager = null;
     private Transform targetPosition;
     private Vector3 moveDirection = Vector3.zero;
     private Animator animator;
@@ -20,6 +22,7 @@ public class CustomerController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        sceneManager = GameObject.Find("SceneManager").GetComponent<SceneManager>();
         NewTarget();
         animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody>();
@@ -74,12 +77,15 @@ public class CustomerController : MonoBehaviour {
 
     public void WaitForOrder()
     {
-        Vector3 randomPoint = Random.insideUnitSphere * 4;
-        randomPoint.y = 0;
-        GameObject randomPointObject = new GameObject();
-        randomPointObject.transform.position = waitingArea.transform.position + randomPoint;
-        targetPosition = randomPointObject.transform;
+        targetPosition = sceneManager.Chairs.ElementAt(sceneManager.NextAvailableChair).GetComponent<Chair>().Target;
+        sceneManager.NextAvailableChair++;
         NewTarget();
+        //Vector3 randomPoint = Random.insideUnitSphere * 4;
+        //randomPoint.y = 0;
+        //GameObject randomPointObject = new GameObject();
+        //randomPointObject.transform.position = waitingArea.transform.position + randomPoint;
+        //targetPosition = randomPointObject.transform;
+        //NewTarget();
     }
 
     public void GetAngryWaitingTime()
