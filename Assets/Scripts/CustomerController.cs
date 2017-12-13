@@ -46,7 +46,7 @@ public class CustomerController : MonoBehaviour {
         moveDirection.Normalize();
 
         //move
-        if (Vector3.Distance(targetPosition.position, transform.position) > 0.1)
+        if (Vector3.Distance(targetPosition.position, transform.position) > 0.2)
         {
             animator.SetBool("HasReachedDestination", false);
             Quaternion rotation = Quaternion.LookRotation(moveDirection);
@@ -67,6 +67,11 @@ public class CustomerController : MonoBehaviour {
                 angryWaitingTimer = 0f;
                 animator.SetTrigger("IsAngry");
             }
+
+            if (targetPosition.gameObject.name.StartsWith("Target"))
+            {
+                targetPosition.parent.gameObject.GetComponent<Chair>().IsOccupied = true;
+            }
         }        
     }
 
@@ -80,12 +85,7 @@ public class CustomerController : MonoBehaviour {
         targetPosition = sceneManager.Chairs.ElementAt(sceneManager.NextAvailableChair).GetComponent<Chair>().Target;
         sceneManager.NextAvailableChair++;
         NewTarget();
-        //Vector3 randomPoint = Random.insideUnitSphere * 4;
-        //randomPoint.y = 0;
-        //GameObject randomPointObject = new GameObject();
-        //randomPointObject.transform.position = waitingArea.transform.position + randomPoint;
-        //targetPosition = randomPointObject.transform;
-        //NewTarget();
+        Debug.Log(targetPosition.position);
     }
 
     public void GetAngryWaitingTime()

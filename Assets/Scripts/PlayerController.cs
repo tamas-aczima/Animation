@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour {
 
     [SerializeField] private SceneManager sceneManager;
+    [SerializeField] private OrderController orderController;
     [SerializeField] private Image conversationBox;
     [SerializeField] private Text conversationText;
     [SerializeField] private Button question1Button;
@@ -22,9 +23,13 @@ public class PlayerController : MonoBehaviour {
     private bool question1Asked = false;
     private bool question2Asked = false;
     private bool question3Asked = false;
-    private int burgerCount = 0;
     private CustomerController customer = null;
     private bool noBurger = true;
+    private new Camera camera;
+
+    private float yaw = 0.0f;
+    private float pitch = 0.0f;
+    private float pitchLimit = 40.0f;
 
     private List<string> conversationStarters = new List<string>
     {
@@ -69,6 +74,8 @@ public class PlayerController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        camera = transform.Find("Main Camera").GetComponent<Camera>();
+
         //lock mouse to game
         Cursor.lockState = CursorLockMode.Locked;
         controller = GetComponent<CharacterController>();
@@ -95,14 +102,19 @@ public class PlayerController : MonoBehaviour {
             controller.Move(moveDirection * walkSpeed * Time.deltaTime);
 
             //rotate
-            if (Input.GetAxis("Mouse X") < 0)
+            yaw += rotateSpeed * Input.GetAxis("Mouse X");
+            pitch -= rotateSpeed * Input.GetAxis("Mouse Y");
+            if (pitch >= pitchLimit)
             {
-                transform.Rotate(Vector3.up * -rotateSpeed);
+                pitch = pitchLimit;
             }
-            if (Input.GetAxis("Mouse X") > 0)
+            else if (pitch <= -pitchLimit)
             {
-                transform.Rotate(Vector3.up * rotateSpeed);
+                pitch = -pitchLimit;
             }
+            transform.eulerAngles = new Vector3(0, yaw, 0);
+            camera.transform.eulerAngles = new Vector3(pitch, yaw, 0.0f);
+
         }
 
         //interact
@@ -110,34 +122,45 @@ public class PlayerController : MonoBehaviour {
 
         if (Input.GetKeyDown(KeyCode.Mouse0))
         {
-            if (Physics.Raycast(transform.position, transform.forward, out hit, 10))
+            if (Physics.Raycast(camera.transform.position, camera.transform.forward, out hit, 10))
             {
-                //only interact with first customer and only from behind counter
-                customer = hit.collider.gameObject.GetComponent<CustomerController>();
-                if (isBehindCounter && customer != null && customer.IsNextCustomer)
+                if (hit.collider.gameObject.GetComponent<CustomerController>() != null)
                 {
-                    //disable movement
-                    controller.enabled = false;
-                    
-                    //unlock mouse and make cursor visible
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.lockState = CursorLockMode.Confined;
-                    Cursor.visible = true;
-
-                    //show conversation box
-                    if (!customer.IsConversationStarted)
+                    //only interact with first customer and only from behind counter
+                    customer = hit.collider.gameObject.GetComponent<CustomerController>();
+                    if (isBehindCounter && customer != null && customer.IsNextCustomer)
                     {
-                        conversationBox.gameObject.SetActive(true);
-                        customer.IsConversationStarted = true;
-                        customerNameText.text = hit.collider.gameObject.name;
-                        customer.Animator.SetInteger("TalkNum", UnityEngine.Random.Range(1, 4));
-                        customer.Animator.SetBool("IsBeingServed", true);
-                    }  
-                }
+                        //disable movement
+                        controller.enabled = false;
 
+                        //unlock mouse and make cursor visible
+                        Cursor.lockState = CursorLockMode.None;
+                        Cursor.lockState = CursorLockMode.Confined;
+                        Cursor.visible = true;
+
+                        //show conversation box
+                        if (!customer.IsConversationStarted)
+                        {
+                            conversationBox.gameObject.SetActive(true);
+                            customer.IsConversationStarted = true;
+                            customerNameText.text = hit.collider.gameObject.name;
+                            customer.Animator.SetInteger("TalkNum", UnityEngine.Random.Range(1, 4));
+                            customer.Animator.SetBool("IsBeingServed", true);
+                        }
+                    }
+                }
+                
+                if (hit.collider.gameObject.name.StartsWith("Burger"))
+                {
+                    orderController.BurgersInInventory++;
+                    orderController.ReadyBurgers--;
+                    Destroy(hit.collider.gameObject);
+                }
             }
         }
 	}
+
+    
 
     private void NextQuestion()
     {
@@ -189,7 +212,7 @@ public class PlayerController : MonoBehaviour {
         else
         {
             conversationText.text = question1PositiveAnswers.ElementAt(UnityEngine.Random.Range(0, question1PositiveAnswers.Count));
-            burgerCount++;
+            orderController.OrderedBurgers++;
             noBurger = false;
         }
     }
@@ -207,7 +230,6 @@ public class PlayerController : MonoBehaviour {
         else
         {
             conversationText.text = question2PositiveAnswers.ElementAt(UnityEngine.Random.Range(0, question2PositiveAnswers.Count));
-            burgerCount++;
         }
     }
 
