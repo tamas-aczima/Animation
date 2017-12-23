@@ -110,6 +110,7 @@ public class IPadController : MonoBehaviour {
 
     void OrderBurger()
     {
+        orderController.PrepareBurgers++;
         StartCoroutine(orderController.CookBurger());
     }
 

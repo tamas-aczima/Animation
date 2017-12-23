@@ -11,6 +11,7 @@ public class OrderController : MonoBehaviour {
     [SerializeField] private GameObject burgerPrefab;
     [SerializeField] private GameObject drinkPrefab;
     private int orderedBurgers = 0;
+    private int prepareBurgers = 0;
     private int readyBurgers = 0;
     private int burgersInInventory = 0;
     private int orderedDrinks = 0;
@@ -34,6 +35,7 @@ public class OrderController : MonoBehaviour {
         Instantiate(burgerPrefab, burgerPositions[nextIndex].position, Quaternion.identity);
         nextIndex++;
         readyBurgers++;
+        prepareBurgers--;
     }
 
     public IEnumerator PrepareDrink()
@@ -48,6 +50,12 @@ public class OrderController : MonoBehaviour {
     {
         get { return orderedBurgers; }
         set { orderedBurgers = value; }
+    }
+
+    public int PrepareBurgers
+    {
+        get { return prepareBurgers; }
+        set { prepareBurgers = value; }
     }
 
     public int ReadyBurgers

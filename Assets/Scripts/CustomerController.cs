@@ -19,6 +19,7 @@ public class CustomerController : MonoBehaviour {
     private GameObject waitingArea;
     private float angryWaitingTime = 0f;
     private float angryWaitingTimer = 0f;
+    private GameObject wayPoint;
 
     // Use this for initialization
     void Start () {
@@ -27,6 +28,7 @@ public class CustomerController : MonoBehaviour {
         animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody>();
         waitingArea = GameObject.Find("WaitingArea");
+        wayPoint = GameObject.Find("WayPoint");
         GetAngryWaitingTime();
     }
 	
@@ -37,6 +39,14 @@ public class CustomerController : MonoBehaviour {
         if (queuePosition == 0)
         {
             isNextCustomer = true;
+        }
+
+        if (targetPosition == wayPoint.transform && Vector3.Distance(transform.position, targetPosition.position) < 0.5)
+        {
+            targetPosition = sceneManager.Chairs.ElementAt(sceneManager.NextAvailableChair).GetComponent<Chair>().Target;
+            sceneManager.NextAvailableChair++;
+            NewTarget();
+            Debug.Log(targetPosition.position);
         }
     }
 
@@ -71,6 +81,8 @@ public class CustomerController : MonoBehaviour {
             if (targetPosition.gameObject.name.StartsWith("Target"))
             {
                 targetPosition.parent.gameObject.GetComponent<Chair>().IsOccupied = true;
+                animator.SetTrigger("SitDown");
+                //targetPosition = targetPosition.transform.parent.Find("Sitting").transform;
             }
         }        
     }
@@ -82,10 +94,8 @@ public class CustomerController : MonoBehaviour {
 
     public void WaitForOrder()
     {
-        targetPosition = sceneManager.Chairs.ElementAt(sceneManager.NextAvailableChair).GetComponent<Chair>().Target;
-        sceneManager.NextAvailableChair++;
+        targetPosition = wayPoint.transform;
         NewTarget();
-        Debug.Log(targetPosition.position);
     }
 
     public void GetAngryWaitingTime()
