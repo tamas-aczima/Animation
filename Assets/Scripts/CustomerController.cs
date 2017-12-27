@@ -20,6 +20,7 @@ public class CustomerController : MonoBehaviour {
     private float angryWaitingTime = 0f;
     private float angryWaitingTimer = 0f;
     private GameObject wayPoint;
+    private bool hasReachedTarget = false;
 
     // Use this for initialization
     void Start () {
@@ -56,7 +57,7 @@ public class CustomerController : MonoBehaviour {
         moveDirection.Normalize();
 
         //move
-        if (Vector3.Distance(targetPosition.position, transform.position) > 0.2)
+        if (Vector3.Distance(targetPosition.position, transform.position) > 0.2 && !hasReachedTarget)
         {
             animator.SetBool("HasReachedDestination", false);
             Quaternion rotation = Quaternion.LookRotation(moveDirection);
@@ -65,6 +66,7 @@ public class CustomerController : MonoBehaviour {
         }
         else
         {
+            hasReachedTarget = true;
             animator.SetBool("HasReachedDestination", true);
             _rigidbody.MoveRotation(Quaternion.RotateTowards(_rigidbody.rotation, Quaternion.LookRotation(targetPosition.forward), rotateSpeed * Time.deltaTime));
             if (animator.GetCurrentAnimatorStateInfo(0).IsName("Idle") && !isCustomerServerd)
@@ -82,7 +84,13 @@ public class CustomerController : MonoBehaviour {
             {
                 targetPosition.parent.gameObject.GetComponent<Chair>().IsOccupied = true;
                 animator.SetTrigger("SitDown");
-                //targetPosition = targetPosition.transform.parent.Find("Sitting").transform;
+                Vector3 dir = targetPosition.transform.parent.Find("Sitting").transform.position - targetPosition.gameObject.transform.position;
+                dir.Normalize();
+                Debug.Log(dir);
+                if (Vector3.Distance(targetPosition.transform.parent.Find("Sitting").transform.position, transform.position) > 0.2)
+                {
+                    _rigidbody.MovePosition(transform.position + (dir * 0.6f * Time.deltaTime));
+                }  
             }
         }        
     }
@@ -90,6 +98,7 @@ public class CustomerController : MonoBehaviour {
     public void NewTarget()
     {
         moveDirection = targetPosition.position - transform.position;
+        hasReachedTarget = false;
     }
 
     public void WaitForOrder()
