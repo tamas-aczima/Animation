@@ -17,6 +17,7 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private Text customerNameText;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float rotateSpeed;
+    [SerializeField] private GameObject burgerPrefab;
     private CharacterController controller;
     private Vector3 moveDirection = Vector3.zero;
     private bool isBehindCounter = false;
@@ -150,11 +151,16 @@ public class PlayerController : MonoBehaviour {
                     }
                 }
                 
-                if (hit.collider.gameObject.name.StartsWith("Burger"))
+                if (hit.collider.gameObject.GetComponent<Burger>() != null && hit.collider.gameObject.GetComponent<Burger>().CanBePicked)
                 {
                     orderController.BurgersInInventory++;
                     orderController.ReadyBurgers--;
                     Destroy(hit.collider.gameObject);
+                }
+
+                if (hit.collider.gameObject.name.StartsWith("Plate") && orderController.BurgersInInventory > 0 && hit.collider.transform.parent.GetComponent<Seat>().Customer.HasOrderedBurger)
+                {
+                    Instantiate(burgerPrefab, hit.collider.gameObject.transform.position + new Vector3(-0.15f, 0, 0), Quaternion.identity);
                 }
             }
         }

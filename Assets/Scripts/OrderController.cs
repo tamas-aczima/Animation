@@ -32,7 +32,8 @@ public class OrderController : MonoBehaviour {
     public IEnumerator CookBurger()
     {
         yield return new WaitForSeconds(burgerCookTime);
-        Instantiate(burgerPrefab, burgerPositions[nextIndex].position, Quaternion.identity);
+        GameObject burger = Instantiate(burgerPrefab, burgerPositions[nextIndex].position, Quaternion.identity);
+        burger.GetComponent<Burger>().CanBePicked = true;
         nextIndex++;
         readyBurgers++;
         prepareBurgers--;

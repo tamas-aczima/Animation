@@ -47,7 +47,7 @@ public class CustomerController : MonoBehaviour {
 
         if (targetPosition == wayPoint.transform && Vector3.Distance(transform.position, targetPosition.position) < 0.5)
         {
-            targetPosition = sceneManager.Chairs.ElementAt(sceneManager.NextAvailableChair).GetComponent<Chair>().Target;
+            targetPosition = sceneManager.Chairs.ElementAt(sceneManager.NextAvailableChair).GetComponent<Seat>().Target;
             sceneManager.NextAvailableChair++;
             NewTarget();
             Debug.Log(targetPosition.position);
@@ -85,7 +85,8 @@ public class CustomerController : MonoBehaviour {
 
             if (targetPosition.gameObject.name.StartsWith("Target"))
             {
-                targetPosition.parent.gameObject.GetComponent<Chair>().IsOccupied = true;
+                targetPosition.parent.gameObject.GetComponent<Seat>().IsOccupied = true;
+                targetPosition.parent.gameObject.GetComponent<Seat>().Customer = this;
                 animator.SetTrigger("SitDown");
                 Vector3 dir = targetPosition.transform.parent.Find("Sitting").transform.position - targetPosition.gameObject.transform.position;
                 dir.Normalize();

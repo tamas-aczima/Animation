@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class ShowOrder : MonoBehaviour {
 
-    [SerializeField] private Chair seat;
+    [SerializeField] private Seat seat;
     [SerializeField] private Image seatImage;
     [SerializeField] private Sprite free;
     [SerializeField] private Sprite occupied;

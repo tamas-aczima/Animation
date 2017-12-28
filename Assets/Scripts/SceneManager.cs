@@ -23,12 +23,12 @@ public class SceneManager : MonoBehaviour {
 
     private List<GameObject> customers = new List<GameObject>();
 
-    private List<Chair> chairs = new List<Chair>();
+    private List<Seat> chairs = new List<Seat>();
 
 	// Use this for initialization
 	void Start () {
         queue = GetComponent<Queue>();
-        chairs = FindObjectsOfType<Chair>().ToList();
+        chairs = FindObjectsOfType<Seat>().ToList();
         spawnTime = GetSpawnTime();        
     }
 	
@@ -101,7 +101,7 @@ public class SceneManager : MonoBehaviour {
         get { return customersInQueue; }
     }
 
-    public List<Chair> Chairs
+    public List<Seat> Chairs
     {
         get { return chairs; }
     }
