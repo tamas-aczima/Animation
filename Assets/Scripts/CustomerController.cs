@@ -21,6 +21,9 @@ public class CustomerController : MonoBehaviour {
     private float angryWaitingTimer = 0f;
     private GameObject wayPoint;
     private bool hasReachedTarget = false;
+    private bool isSitting = false;
+    private bool isCorrected = false;
+    private bool hasOrderedBurger = false;
 
     // Use this for initialization
     void Start () {
@@ -86,11 +89,21 @@ public class CustomerController : MonoBehaviour {
                 animator.SetTrigger("SitDown");
                 Vector3 dir = targetPosition.transform.parent.Find("Sitting").transform.position - targetPosition.gameObject.transform.position;
                 dir.Normalize();
-                Debug.Log(dir);
-                if (Vector3.Distance(targetPosition.transform.parent.Find("Sitting").transform.position, transform.position) > 0.2)
+                if (Vector3.Distance(targetPosition.transform.parent.Find("Sitting").transform.position, transform.position) > 0.2 && !isSitting)
                 {
                     _rigidbody.MovePosition(transform.position + (dir * 0.6f * Time.deltaTime));
-                }  
+                } 
+                else
+                {
+                    isSitting = true;
+                    Debug.Log("sitting");
+                    if (!isCorrected && animator.GetCurrentAnimatorStateInfo(0).IsName("Stand To Sit") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1)
+                    {
+                        _rigidbody.MovePosition(transform.position + Vector3.up * 0.8f);
+                        isCorrected = true;
+                    }
+                    
+                }
             }
         }        
     }
@@ -145,5 +158,11 @@ public class CustomerController : MonoBehaviour {
     {
         get { return isCustomerServerd; }
         set { isCustomerServerd = value; }
+    }
+
+    public bool HasOrderedBurger
+    {
+        get { return hasOrderedBurger; }
+        set { hasOrderedBurger = value; }
     }
 }

@@ -213,6 +213,7 @@ public class PlayerController : MonoBehaviour {
         {
             conversationText.text = question1PositiveAnswers.ElementAt(UnityEngine.Random.Range(0, question1PositiveAnswers.Count));
             orderController.OrderedBurgers++;
+            customer.HasOrderedBurger = true;
             noBurger = false;
         }
     }
