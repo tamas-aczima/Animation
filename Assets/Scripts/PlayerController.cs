@@ -160,7 +160,9 @@ public class PlayerController : MonoBehaviour {
 
                 if (hit.collider.gameObject.name.StartsWith("Plate") && orderController.BurgersInInventory > 0 && hit.collider.transform.parent.GetComponent<Seat>().Customer.HasOrderedBurger)
                 {
+                    Debug.Log(hit.collider.transform.parent.GetComponent<Seat>().Customer.HasOrderedBurger);
                     Instantiate(burgerPrefab, hit.collider.gameObject.transform.position + new Vector3(-0.15f, 0, 0), Quaternion.identity);
+                    hit.collider.transform.parent.GetComponent<Seat>().Customer.HasBurger = true;
                 }
             }
         }

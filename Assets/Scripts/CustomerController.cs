@@ -24,6 +24,7 @@ public class CustomerController : MonoBehaviour {
     private bool isSitting = false;
     private bool isCorrected = false;
     private bool hasOrderedBurger = false;
+    private bool hasBurger = false;
 
     // Use this for initialization
     void Start () {
@@ -97,13 +98,17 @@ public class CustomerController : MonoBehaviour {
                 else
                 {
                     isSitting = true;
-                    Debug.Log("sitting");
                     if (!isCorrected && animator.GetCurrentAnimatorStateInfo(0).IsName("Stand To Sit") && animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1)
                     {
                         _rigidbody.MovePosition(transform.position + Vector3.up * 0.8f);
                         isCorrected = true;
                     }
                     
+                }
+
+                if (hasBurger)
+                {
+                    animator.SetBool("HasBurger", true);
                 }
             }
         }        
@@ -165,5 +170,11 @@ public class CustomerController : MonoBehaviour {
     {
         get { return hasOrderedBurger; }
         set { hasOrderedBurger = value; }
+    }
+
+    public bool HasBurger
+    {
+        get { return hasBurger; }
+        set { hasBurger = value; }
     }
 }
